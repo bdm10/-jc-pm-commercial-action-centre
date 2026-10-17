@@ -171,7 +171,8 @@ def _dedupe(rows: list[dict[str, Any]], key_cols: tuple[str, ...], spec: FileSpe
 
 
 def validate_package(folder: Path, known_salesperson_codes: set[str] | None = None,
-                     existing_measures: set[str] | None = None, allow_live: bool = False) -> ValidationResult:
+                     existing_measures: set[str] | None = None, allow_live: bool = False,
+                     synthetic_only: bool = False) -> ValidationResult:
     folder = Path(folder)
     res = ValidationResult(package_label=folder.name, checksum=_checksum(folder) if folder.exists() else "")
     if not folder.is_dir():
@@ -201,6 +202,8 @@ def validate_package(folder: Path, known_salesperson_codes: set[str] | None = No
             res.fatal.append(f"manifest.csv: {m['source_entity']} period_start after period_end")
         if m["data_classification"] == "live" and not allow_live:
             res.fatal.append("manifest.csv: live data is refused in this prototype (set ALLOW_LIVE_IMPORT=true only after approval)")
+        if synthetic_only and m["data_classification"] != "synthetic":
+            res.fatal.append("manifest.csv: this hosted demo accepts synthetic data only")
     if not entities:
         res.fatal.append("manifest.csv: no entities declared")
     if res.fatal:

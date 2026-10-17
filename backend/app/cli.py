@@ -104,6 +104,32 @@ def cmd_scheduler(a: argparse.Namespace) -> None:
         time.sleep(interval * 60)
 
 
+def cmd_demo_refresh(a: argparse.Namespace) -> None:
+    from app.services.demo import demo_refresh
+
+    print(json.dumps(demo_refresh(if_stale=not a.force), indent=2, default=str))
+
+
+def cmd_serve(_: argparse.Namespace) -> None:
+    """Container entry point: check configuration, migrate, (demo) ensure fresh synthetic data, start the server."""
+    import os
+
+    import uvicorn
+
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
+    s = get_settings()
+    problems = s.startup_problems()
+    if problems:
+        sys.exit("Refusing to start: " + " | ".join(problems))
+    command.upgrade(_alembic_cfg(), "head")
+    if s.app_env == "demo":
+        from app.services.demo import demo_refresh
+
+        log.info("demo data: %s", demo_refresh(if_stale=True))
+    uvicorn.run("app.main:app", host="0.0.0.0", port=int(os.environ.get("PORT", "8000")),
+                proxy_headers=True, forwarded_allow_ips="*")
+
+
 def cmd_create_user(a: argparse.Namespace) -> None:
     from app.db import session_factory
     from app.models.records import AppUser
@@ -174,6 +200,10 @@ def main() -> None:
     sc.add_argument("--every-minutes", type=int)
     sc.add_argument("--once", action="store_true")
     sc.set_defaults(fn=cmd_scheduler)
+    dr = sub.add_parser("demo-refresh")
+    dr.add_argument("--force", action="store_true", help="regenerate even if the data is still fresh")
+    dr.set_defaults(fn=cmd_demo_refresh)
+    sub.add_parser("serve").set_defaults(fn=cmd_serve)
     cu = sub.add_parser("create-user")
     cu.add_argument("--email", required=True)
     cu.add_argument("--name", required=True)

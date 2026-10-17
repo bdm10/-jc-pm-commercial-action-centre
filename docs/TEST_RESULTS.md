@@ -5,11 +5,13 @@ _Run on 17 Oct 2026 in the development container: Python 3.13, PostgreSQL 16, No
 | Suite | Command | Result |
 |---|---|---|
 | Backend lint | `ruff check app tests` | **passed** |
-| Backend tests (PostgreSQL) | `pytest -q` | **86 passed** |
+| Backend tests (PostgreSQL) | `pytest -q` | **114 passed** |
 | Frontend typecheck | `tsc --noEmit` | **passed** |
 | Frontend unit tests | `vitest run` | **7 passed** |
 | End-to-end journeys, phone 390×844 + desktop 1366×900 | `playwright test e2e/journeys.spec.ts` | **16 passed** (8 journeys × 2 viewports) |
 | Screenshot capture | `npm run screenshots` | 20 passed, 4 skipped by design (single-viewport shots) |
+| Hosted-demo backend checks | `pytest tests/test_demo_deploy.py` | **28 passed** (included in the 114 backend total) |
+| Demo container (image built from `Dockerfile`, `APP_ENV=demo`, password set) | `curl` checks + `playwright test e2e/access.spec.ts e2e/journeys.spec.ts` with `E2E_HTTP_PASSWORD` | **22 passed**: unauthenticated and wrong-password access blocked (401), 16 journeys through the password prompt |
 
 ## What is covered
 
@@ -100,6 +102,6 @@ _Run on 17 Oct 2026 in the development container: Python 3.13, PostgreSQL 16, No
 
 - **Entra:** not tested against a real tenant; frontend MSAL sign-in is not implemented.
 - **AI:** the Anthropic adapter was not called live; the guard is tested with a fake provider.
-- **Docker:** the image and compose file were not built here (no Docker daemon).
+- **Docker / hosting:** the image was built and run locally (base images adjusted only on the build machine to trust the sandbox's TLS proxy; the committed Dockerfile is unchanged). The Render deployment itself was not performed from here; `docker-compose.yml` was not run.
 - **Data:** all tests use synthetic data. No reconciliation against approved reports is possible until certified extracts are supplied (GAPS F7).
 - **Accessibility:** checked by design (text on every status, 44–56 px touch targets, focus rings, `aria` labels) but not by an automated audit tool.

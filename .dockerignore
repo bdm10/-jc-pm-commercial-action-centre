@@ -1,0 +1,20 @@
+# Keep the image small and never ship local secrets, internal material or generated data.
+.git
+**/.env
+**/.env.*
+!.env.example
+private/
+data/
+docs/
+**/*.docx
+**/*.xlsx
+**/*.pdf
+backend/.venv
+backend/.pytest_cache
+**/__pycache__
+frontend/node_modules
+frontend/dist
+frontend/test-results
+frontend/playwright-report
+**/.ruff_cache
+backend/tests

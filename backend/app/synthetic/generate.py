@@ -366,13 +366,16 @@ class Gen:
 
 
 def generate(out: Path, as_of: dt.date, seed: int = 20261017, stale_entity: str | None = None) -> tuple[dict[str, Any], Gen]:
+    from app import clock
     from app.clock import BUSINESS_TZ
 
     g = Gen(as_of, seed)
     g.build()
     refreshed = {}
+    latest_allowed = (clock.now() - dt.timedelta(minutes=5)).astimezone(BUSINESS_TZ).replace(second=0, microsecond=0)
     for e in ("JC", "PM"):
         day = as_of - dt.timedelta(days=5) if e == stale_entity else as_of
-        refreshed[e] = dt.datetime.combine(day, dt.time(6, 0), tzinfo=BUSINESS_TZ)
+        # The "source refresh" is 06:00 on the as-of day, but never in the future (e.g. when seeding at 01:00).
+        refreshed[e] = min(dt.datetime.combine(day, dt.time(6, 0), tzinfo=BUSINESS_TZ), latest_allowed)
     summary = g.write(Path(out), refreshed)
     return summary, g

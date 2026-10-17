@@ -23,8 +23,9 @@ def _strip(row: dict[str, Any]) -> dict[str, Any]:
 def import_package(db: Session, folder: Path, force: bool = False, actor_user_id: int | None = None) -> tuple[ValidationResult, F.ImportRun | None]:
     codes = {c for c in db.execute(select(AppUser.salesperson_code)).scalars() if c}
     existing_measures = set(db.execute(select(F.MeasureDefinition.measure_code)).scalars())
+    s = get_settings()
     res = validate_package(folder, known_salesperson_codes=codes, existing_measures=existing_measures,
-                           allow_live=get_settings().allow_live_import)
+                           allow_live=s.allow_live_import, synthetic_only=s.app_env == "demo")
 
     if not force and res.checksum:
         last = db.execute(select(F.ImportRun).where(F.ImportRun.status == "loaded").order_by(F.ImportRun.id.desc()).limit(1)).scalar_one_or_none()

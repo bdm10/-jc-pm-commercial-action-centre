@@ -67,6 +67,10 @@ data/templates/  import templates (fictitious example rows)
   - production refuses to start in demo mode;
   - Entra ID token validation is **scaffolded** (see the checklist).
 
+## Hosted demo
+
+A password-protected online demo (synthetic data only, no company connections) can be created on Render from [`render.yaml`](render.yaml) in a few clicks; the password is generated and stored by Render, not in Git. Steps, cost (≈ US$13–14/month), sharing, updating and shutting down: **[docs/DEPLOY_DEMO.md](docs/DEPLOY_DEMO.md)**.
+
 ## Run it locally
 
 Prerequisites: Python 3.12+, Node 22+, PostgreSQL 16 (local install, or the `db` service in `docker-compose.yml`).
@@ -138,6 +142,7 @@ Latest results: [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md).
 - [docs/RULES.md](docs/RULES.md): opportunity rules, suppression, priority, workflow rules
 - [docs/DATA_DICTIONARY.md](docs/DATA_DICTIONARY.md): import contract, tables, evidence format, synthetic cases
 - [docs/INTEGRATION_CHECKLIST.md](docs/INTEGRATION_CHECKLIST.md): Entra ID, certified Fabric/Power BI data, MiPM, hosting
+- [docs/DEPLOY_DEMO.md](docs/DEPLOY_DEMO.md): password-protected hosted demo (Render)
 - [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md): test results and known limitations
 
 ## Governance
@@ -160,7 +165,7 @@ Latest results: [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md).
   - frontend sign-in (MSAL) is **not implemented**, so in `entra` mode the UI explains that sign-in is not connected;
   - users are provisioned through the CLI.
 - **Integrations not built:** no connection to Fabric/Power BI, MiPM or the ERP; the import contract is the integration seam. The AI adapter is off by default and has not been called against a live API.
-- **Deployment not verified:** the Dockerfile and `docker-compose.yml` were not built or run here (no Docker daemon). The tested path is the local one above.
+- **Deployment:** the Docker image was built and run locally in demo mode and passed the access and journey checks; the Render deployment itself has not been performed or verified from the build environment (no Render account access). `docker-compose.yml` was not run.
 - **Scale and features:**
   - pilot-scale implementation: scope and snapshot calculations load customer facts in memory, which is fine for thousands of customers but not tuned beyond that;
   - comparison windows use calendar months; JC's fiscal calendar is not modelled (gap D4);

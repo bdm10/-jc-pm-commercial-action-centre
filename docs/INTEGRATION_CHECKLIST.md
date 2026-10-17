@@ -43,7 +43,8 @@ Status key: ☐ not started · ◐ scaffolded / partial (not verified against th
 
 | | Item | Status |
 |---|---|---|
-| 4.1 | Container platform (for example Azure Container Apps or App Service) running the single image: API + built SPA | ◐ Dockerfile provided, **not built here** (no Docker daemon) |
+| 4.1 | Container platform (for example Azure Container Apps or App Service) running the single image: API + built SPA | ◐ image built and run locally (demo mode, access + journey checks passed); no pilot hosting yet |
+| 4.1a | Password-protected **synthetic demo** on Render (`render.yaml`, [DEPLOY_DEMO.md](DEPLOY_DEMO.md)) | ◐ configuration ready and tested as a container; account and deployment pending |
 | 4.2 | Managed PostgreSQL 16 with private networking, backups and point-in-time restore. Run `python -m app.cli migrate` on deploy. | ☐ |
 | 4.3 | Separate DB roles: the API role needs `SELECT` on `facts`; only the import/refresh job writes `facts` | ☐ |
 | 4.4 | Scheduler as a second container or job, with the same image and `python -m app.cli scheduler` | ◐ |
