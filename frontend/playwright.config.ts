@@ -15,10 +15,6 @@ export default defineConfig({
     timezoneId: "Europe/Madrid",
     trace: "retain-on-failure",
     launchOptions: process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {},
-    // Hosted demo behind the shared access password (never hard-coded; pass via environment).
-    httpCredentials: process.env.E2E_HTTP_PASSWORD
-      ? { username: process.env.E2E_HTTP_USER ?? "demo", password: process.env.E2E_HTTP_PASSWORD }
-      : undefined,
   },
   projects: [
     { name: "phone", use: { ...devices["Pixel 7"], browserName: "chromium", viewport: { width: 390, height: 844 } } },

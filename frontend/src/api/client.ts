@@ -36,6 +36,10 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const body = text ? JSON.parse(text) : null;
   if (!res.ok) {
     const code = body?.error?.code ?? (res.status === 422 ? "validation_error" : "http_error");
+    if (res.status === 401 && code === "login_required") {
+      // Hosted demo: the login session has expired. Sign in again and come back to this page.
+      window.location.assign(`/login?next=${encodeURIComponent(window.location.pathname + window.location.search)}`);
+    }
     throw new ApiError(res.status, code, body);
   }
   return body as T;

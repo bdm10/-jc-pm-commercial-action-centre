@@ -12,6 +12,20 @@ export const USERS = {
   admin: "admin@example.com",
 };
 
+/** Credentials of a login-protected deployment (never hard-coded; pass via environment). */
+export const GATE = process.env.E2E_LOGIN_PASSWORD
+  ? { user: process.env.E2E_LOGIN_USER ?? "", password: process.env.E2E_LOGIN_PASSWORD }
+  : null;
+
+export async function signIn(page: Page, next = "/") {
+  if (!GATE) return;
+  await page.goto(`/login?next=${encodeURIComponent(next)}`);
+  await page.getByLabel(/Usuario/).fill(GATE.user);
+  await page.getByLabel(/Contraseña/).fill(GATE.password);
+  await page.getByRole("button", { name: /Entrar/ }).click();
+  await page.waitForURL((url) => !url.pathname.startsWith("/login"));
+}
+
 export async function loginAs(page: Page, email: string, lang: "es" | "en" = "es") {
   await page.addInitScript(
     ([e, l]) => {
@@ -20,6 +34,7 @@ export async function loginAs(page: Page, email: string, lang: "es" | "en" = "es
     },
     [email, lang],
   );
+  await signIn(page);
 }
 
 export function reseed(...args: string[]) {

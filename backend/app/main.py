@@ -44,8 +44,9 @@ def create_app() -> FastAPI:
     app = FastAPI(title="JC / PM Commercial Action Centre", version="0.1.0-prototype", lifespan=lifespan,
                   docs_url="/api/docs" if local else None, openapi_url="/api/openapi.json" if local else None)
     if s.demo_access_password:
-        # Everything except /healthz requires the shared demo password (UI, assets, API).
-        app.add_middleware(AccessGate, user=s.demo_access_user, password=s.demo_access_password)
+        # Login gate: every page, asset and API call requires signing in (only /healthz stays open).
+        app.add_middleware(AccessGate, user=s.demo_access_user.strip(), password=s.demo_access_password,
+                           session_secret=s.session_secret, session_hours=s.demo_session_hours)
     if s.cors_origins:
         app.add_middleware(CORSMiddleware, allow_origins=[o.strip() for o in s.cors_origins.split(",") if o.strip()],
                            allow_methods=["GET", "POST", "PUT", "PATCH"], allow_headers=["Authorization", "Content-Type", "X-Demo-User"])

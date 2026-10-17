@@ -64,6 +64,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   border-radius: 8px; min-height: 40px; padding: 0 10px; font-size: 14px; max-width: 46vw;
 }
 .topbar select option { color: var(--ink); }
+.topbar .logout { display: inline-flex; align-items: center; text-decoration: none; }
 @media (max-width: 600px) {
   .brand strong { white-space: normal; font-size: 14.5px; }
   .topbar.has-switcher .brand span { display: none; }

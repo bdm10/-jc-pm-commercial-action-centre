@@ -183,6 +183,11 @@ function Shell({ children, demoUser, onSwitch }: { children: ReactNode; demoUser
         <button className="lang" onClick={() => setLang(lang === "es" ? "en" : "es")} aria-label={t("app.language")}>
           {lang === "es" ? "EN" : "ES"}
         </button>
+        {meta.access_gate && (
+          <a className="lang logout" href="/logout" data-testid="logout">
+            {t("app.logout")}
+          </a>
+        )}
       </header>
       <div className="banners">
         {meta.demo_mode && (

@@ -11,6 +11,7 @@ export const en: Messages = {
   "app.save": "Save",
   "app.language": "Language",
   "app.user": "User",
+  "app.logout": "Sign out",
   "app.more": "Show more",
   "app.less": "Show less",
 

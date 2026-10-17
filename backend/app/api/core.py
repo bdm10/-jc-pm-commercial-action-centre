@@ -40,6 +40,7 @@ def meta() -> dict:
         "auth_mode": s.auth_mode or None,
         "auth_configured": s.auth_mode in ("entra", "demo") and (s.auth_mode != "demo" or s.demo_mode),
         "demo_mode": s.demo_mode,
+        "access_gate": bool(s.demo_access_password),
         "ai_enabled": s.ai_provider != "none" and bool(s.anthropic_api_key),
         "entra": {"tenant_id": s.entra_tenant_id, "client_id": s.entra_spa_client_id, "scope": s.entra_api_scope}
         if s.auth_mode == "entra" else None,

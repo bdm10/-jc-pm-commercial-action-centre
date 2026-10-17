@@ -1,6 +1,6 @@
 // Core journeys on phone and desktop: discover -> prepare -> act -> follow up, plus scope and data-state checks.
 import { expect, test } from "@playwright/test";
-import { loginAs, reseed, USERS } from "./helpers";
+import { GATE, loginAs, reseed, USERS } from "./helpers";
 
 test.beforeEach(() => reseed());
 
@@ -73,7 +73,8 @@ test("evidence shows provenance and synthetic figures are never labelled certifi
 });
 
 test("a salesperson cannot reach the team view or another team's customers", async ({ page, request }) => {
-  const other = await request.get("/api/customers", { headers: { "X-Demo-User": USERS.david } });
+  const gate: Record<string, string> = GATE ? { Authorization: "Basic " + Buffer.from(`${GATE.user}:${GATE.password}`).toString("base64") } : {};
+  const other = await request.get("/api/customers", { headers: { "X-Demo-User": USERS.david, ...gate } });
   const item = (await other.json()).items[0];
   await loginAs(page, USERS.ana);
   await page.goto("/");

@@ -10,6 +10,7 @@ export const es = {
   "app.save": "Guardar",
   "app.language": "Idioma",
   "app.user": "Usuario",
+  "app.logout": "Salir",
   "app.more": "Ver más",
   "app.less": "Ver menos",
 

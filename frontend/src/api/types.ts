@@ -10,6 +10,7 @@ export interface Meta {
   auth_mode: "demo" | "entra" | null;
   auth_configured: boolean;
   demo_mode: boolean;
+  access_gate: boolean;
   ai_enabled: boolean;
 }
 

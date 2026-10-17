@@ -16,6 +16,7 @@ COPY backend/ ./
 COPY --from=web /web/dist /app/frontend/dist
 RUN useradd --create-home --uid 10001 appuser && mkdir -p /app/data && chown -R appuser /app
 USER appuser
+# The server binds 0.0.0.0:$PORT (Render sets PORT, default 10000); 8000 when PORT is unset.
 EXPOSE 8000
-# Checks configuration (fails closed), runs migrations, keeps demo data fresh (APP_ENV=demo), then serves on $PORT.
+# Checks configuration (fails closed), runs migrations, keeps demo data fresh (APP_ENV=demo), then serves.
 CMD ["python", "-m", "app.cli", "serve"]
