@@ -1,11 +1,17 @@
 # Convenience targets for local development (see README).
-PY := backend/.venv/bin/python
+# Python used to create the virtualenv (3.12+). On macOS the default python3 may be Apple's 3.9:
+#   make setup PYTHON=python3.13
+PYTHON ?= python3
 
-.PHONY: setup migrate seed api web build test test-backend test-frontend e2e screenshots lint
+.PHONY: setup migrate seed api web build preview test test-backend test-frontend e2e screenshots lint
 
 setup:            ## install backend and frontend dependencies
-	cd backend && python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
+	@$(PYTHON) -c 'import sys; sys.exit(0 if sys.version_info >= (3, 12) else "Python 3.12+ is required, found " + sys.version.split()[0] + ". Try: make setup PYTHON=python3.13")'
+	cd backend && $(PYTHON) -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 	cd frontend && npm ci
+
+preview: migrate seed build   ## one step: schema, fresh synthetic demo data, UI build, then serve on http://localhost:8000
+	cd backend && .venv/bin/uvicorn app.main:app --port 8000
 
 migrate:          ## apply database migrations
 	cd backend && .venv/bin/python -m app.cli migrate

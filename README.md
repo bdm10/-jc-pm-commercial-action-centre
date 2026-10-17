@@ -80,17 +80,14 @@ createdb -O cac cac_test     # for the backend test suite
 # 2. Configuration
 cp .env.example backend/.env # AUTH_MODE=demo, synthetic data only
 
-# 3. Dependencies
+# 3. Dependencies (on macOS use the Homebrew Python: make setup PYTHON=python3.13)
 make setup                   # backend venv + pip install, frontend npm ci
 
-# 4. Schema and synthetic demo data
-make migrate
-make seed                    # users, synthetic JC/PM package, refresh, sample action history
-
-# 5. Build the UI and start the server
-make build
-make api                     # http://localhost:8000
+# 4. Schema, fresh synthetic demo data, UI build, server on http://localhost:8000
+make preview                 # same as: make migrate && make seed && make build && make api
 ```
+
+`make seed` (part of `make preview`) **resets** the demo database to a fresh synthetic state each time.
 
 Open **http://localhost:8000**, pick a demo user, and try:
 
