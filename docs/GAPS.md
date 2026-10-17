@@ -88,6 +88,6 @@ Status and steps are in [INTEGRATION_CHECKLIST.md](INTEGRATION_CHECKLIST.md).
 | I1 | **Entra ID**: app registrations (API + SPA), scope, user provisioning and role/team source | Backend token validation **scaffolded** (unit-tested with local keys, not against a tenant). Frontend sign-in **not implemented**. |
 | I2 | **Certified Fabric / Power BI data**: service principal, read-only access, scheduled export that produces the import contract | **Not started**. The contract, validator and scheduler inbox are ready. |
 | I3 | **MiPM**: system of record for activities; embed, link or sync | **Not started**. Decision pending (pack §5). |
-| I4 | **Hosting**: container platform, managed PostgreSQL, Key Vault secrets, private networking, backups, retention | Dockerfile and compose file provided **(not built or run in this environment)** |
+| I4 | **Hosting**: container platform, managed PostgreSQL, Key Vault secrets, private networking, backups, retention | Pilot hosting **not started**. A login-protected **synthetic demo** on Render's free tier is configured (`render.yaml`); its image was built and tested locally, not yet deployed. |
 | I5 | **AI provider**: approval, data-processing terms, whether customer names may be sent | Adapter implemented and **off by default**. The guard and deterministic fallback are tested; no live call was made. |
 | I6 | **Retention and privacy** for notes, audit history and AI drafts | Not defined |

@@ -67,9 +67,67 @@ data/templates/  import templates (fictitious example rows)
   - production refuses to start in demo mode;
   - Entra ID token validation is **scaffolded** (see the checklist).
 
-## Hosted demo
+## Deploy the demo on Render (free tier)
 
-A password-protected online demo (synthetic data only, no company connections) can be created on Render from [`render.yaml`](render.yaml) in a few clicks; the password is generated and stored by Render, not in Git. Steps, cost (≈ US$13–14/month), sharing, updating and shutting down: **[docs/DEPLOY_DEMO.md](docs/DEPLOY_DEMO.md)**.
+A login-protected online demo with **synthetic data only** and no company connections, created from [`render.yaml`](render.yaml). Everything runs on Render's **free** plans; nothing in this setup needs payment. More detail (protections, free-tier behaviour, troubleshooting): [docs/DEPLOY_DEMO.md](docs/DEPLOY_DEMO.md).
+
+**What the Blueprint creates**
+
+| Resource | What it is | Plan |
+|---|---|---|
+| `jc-pm-action-centre-demo` | Web service built from the root `Dockerfile`, branch `dev/commercial-action-centre-prototype`, region Frankfurt. FastAPI serves the API under `/api` and the built React app on every other path, on one URL. Health check: `/healthz`. | Free |
+| `jc-pm-action-centre-demo-db` | PostgreSQL 16, Frankfurt, no public access | Free |
+
+**Environment variables**
+
+| Variable | Who sets it | Value |
+|---|---|---|
+| `DEMO_ACCESS_USER` | **You**, when Render asks | Username for the login page (at least 3 characters) |
+| `DEMO_ACCESS_PASSWORD` | **You**, when Render asks | Password for the login page (**at least 16 characters**; keep it in a password manager) |
+| `SESSION_SECRET` | Render (generated) | Nothing to enter |
+| `DATABASE_URL` | Render (from the database) | Nothing to enter |
+| `APP_ENV=demo`, `AUTH_MODE=demo`, `AI_PROVIDER=none` | `render.yaml` | Fixed |
+
+The service refuses to start if the username or password is missing or too short, so the demo is never left open.
+
+**Steps**
+
+1. Sign in at <https://dashboard.render.com> with **GitHub**, or choose **Sign up with GitHub** if you have no Render account.
+2. In the dashboard, choose **New → Blueprint**.
+3. If Render asks for GitHub access, install its app with **Only select repositories** → `bdm10/-jc-pm-commercial-action-centre`.
+4. Select that repository. For **Branch**, choose `dev/commercial-action-centre-prototype`. Give the Blueprint a name, for example `jc-pm-action-centre-demo`. Render reads `render.yaml` and lists the two resources above.
+5. Check that both resources show the **Free** plan. If Render shows a paid plan or asks for payment details, stop and don't apply.
+6. Enter values for `DEMO_ACCESS_USER` and `DEMO_ACCESS_PASSWORD` when Render asks for them.
+7. Choose **Apply** (or **Deploy Blueprint**). The first build takes about 5–10 minutes. Wait until the web service shows **Live**.
+8. Open the URL shown at the top of the web service page, e.g. `https://jc-pm-action-centre-demo.onrender.com` (Render adds a suffix if that name is taken). Sign in with your username and password, then choose a demo user.
+9. **Quick check** in a private browser window:
+   - `https://<your-url>/` shows the login page;
+   - `https://<your-url>/api/meta` shows `{"error":{"code":"login_required"}}`;
+   - `https://<your-url>/healthz` shows `{"status":"ok"}`.
+
+If you skipped the credentials prompt, or want to change them later: web service → **Environment** → edit the value → **Save changes** (the service restarts and everyone is signed out).
+
+**Free-tier behaviour**
+- **Sleep:** the web service sleeps after 15 idle minutes; the next visit takes about a minute to wake it. Open the URL shortly before a demo.
+- **Database expiry:** a free database expires **30 days** after creation. To continue, delete the expired database, re-sync the Blueprint (**Blueprints → your Blueprint → Manual sync**) so Render creates a new free one, and redeploy the web service. The app recreates its synthetic data automatically.
+- **Daily reset:** the synthetic data regenerates once a day (and on start when it is older than 24 hours), so actions recorded during a demo are cleared.
+
+**Update or remove the demo**
+
+| Task | How |
+|---|---|
+| Update | Push to `dev/commercial-action-centre-prototype`; Render redeploys automatically |
+| After merging PR #1 | Change `branch:` in `render.yaml` to `main`, or use web service → **Settings → Build & Deploy → Branch** |
+| Pause | Web service → **Settings → Suspend** |
+| Remove | Delete the web service, then the database (**Settings → Delete**). Optionally remove Render's access in GitHub → Settings → Applications. |
+
+**Automated check of a deployed demo** (needs the local setup below):
+
+```bash
+cd frontend
+E2E_BASE_URL=https://<your-url> E2E_LOGIN_USER='<username>' E2E_LOGIN_PASSWORD='<password>' E2E_SKIP_SEED=1 \
+  npx playwright test e2e/access.spec.ts
+```
 
 ## Run it locally
 
@@ -142,7 +200,7 @@ Latest results: [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md).
 - [docs/RULES.md](docs/RULES.md): opportunity rules, suppression, priority, workflow rules
 - [docs/DATA_DICTIONARY.md](docs/DATA_DICTIONARY.md): import contract, tables, evidence format, synthetic cases
 - [docs/INTEGRATION_CHECKLIST.md](docs/INTEGRATION_CHECKLIST.md): Entra ID, certified Fabric/Power BI data, MiPM, hosting
-- [docs/DEPLOY_DEMO.md](docs/DEPLOY_DEMO.md): password-protected hosted demo (Render)
+- [docs/DEPLOY_DEMO.md](docs/DEPLOY_DEMO.md): login-protected hosted demo on Render's free tier
 - [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md): test results and known limitations
 
 ## Governance
@@ -165,7 +223,7 @@ Latest results: [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md).
   - frontend sign-in (MSAL) is **not implemented**, so in `entra` mode the UI explains that sign-in is not connected;
   - users are provisioned through the CLI.
 - **Integrations not built:** no connection to Fabric/Power BI, MiPM or the ERP; the import contract is the integration seam. The AI adapter is off by default and has not been called against a live API.
-- **Deployment:** the Docker image was built and run locally in demo mode and passed the access and journey checks; the Render deployment itself has not been performed or verified from the build environment (no Render account access). `docker-compose.yml` was not run.
+- **Deployment:** the Docker image was built from a clean checkout and run locally the way Render runs it (`PORT=10000`, demo mode, login gate), and passed the login and journey checks. The Render deployment itself has not been performed or verified from the build environment (no Render account access; render.com is not reachable from it). `docker-compose.yml` was not run.
 - **Scale and features:**
   - pilot-scale implementation: scope and snapshot calculations load customer facts in memory, which is fine for thousands of customers but not tuned beyond that;
   - comparison windows use calendar months; JC's fiscal calendar is not modelled (gap D4);

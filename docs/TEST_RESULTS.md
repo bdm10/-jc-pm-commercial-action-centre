@@ -5,13 +5,15 @@ _Run on 17 Oct 2026 in the development container: Python 3.13, PostgreSQL 16, No
 | Suite | Command | Result |
 |---|---|---|
 | Backend lint | `ruff check app tests` | **passed** |
-| Backend tests (PostgreSQL) | `pytest -q` | **114 passed** |
+| Backend tests (PostgreSQL) | `pytest -q` | **128 passed** |
 | Frontend typecheck | `tsc --noEmit` | **passed** |
 | Frontend unit tests | `vitest run` | **7 passed** |
 | End-to-end journeys, phone 390×844 + desktop 1366×900 | `playwright test e2e/journeys.spec.ts` | **16 passed** (8 journeys × 2 viewports) |
 | Screenshot capture | `npm run screenshots` | 20 passed, 4 skipped by design (single-viewport shots) |
-| Hosted-demo backend checks | `pytest tests/test_demo_deploy.py` | **28 passed** (included in the 114 backend total) |
-| Demo container (image built from `Dockerfile`, `APP_ENV=demo`, password set) | `curl` checks + `playwright test e2e/access.spec.ts e2e/journeys.spec.ts` with `E2E_HTTP_PASSWORD` | **22 passed**: unauthenticated and wrong-password access blocked (401), 16 journeys through the password prompt |
+| Hosted-demo backend checks (login gate, sessions, fail-closed config, synthetic-only, daily refresh) | `pytest tests/test_demo_deploy.py` | **42 passed** (included in the 128 backend total) |
+| Clean checkout (fresh clone of the branch) | `npm ci`, `npm run build`, `npm test`, fresh venv + `pip install -r requirements-dev.txt`, `ruff`, `pytest` | build OK; **7** and **128 passed** |
+| Render-style container (image built from the clean checkout's `Dockerfile`; `PORT=10000`, `APP_ENV=demo`, credentials only in environment variables, `postgresql://` URL) | `curl` checks + `playwright test e2e/access.spec.ts e2e/journeys.spec.ts` with `E2E_LOGIN_USER` / `E2E_LOGIN_PASSWORD` | **22 passed** (3 login-gate checks + 8 journeys, × phone and desktop). Bound to `0.0.0.0:10000`; pages redirect to `/login`, API and assets return 401 without a session; deep-link refresh served by the SPA fallback; `Secure` cookie behind HTTPS; started without credentials → refused (exit 1) |
+| Local mode without the login gate | `playwright test e2e/journeys.spec.ts e2e/access.spec.ts` | **16 passed**, 6 skipped (gate checks need credentials) |
 
 ## What is covered
 
@@ -102,6 +104,6 @@ _Run on 17 Oct 2026 in the development container: Python 3.13, PostgreSQL 16, No
 
 - **Entra:** not tested against a real tenant; frontend MSAL sign-in is not implemented.
 - **AI:** the Anthropic adapter was not called live; the guard is tested with a fake provider.
-- **Docker / hosting:** the image was built and run locally (base images adjusted only on the build machine to trust the sandbox's TLS proxy; the committed Dockerfile is unchanged). The Render deployment itself was not performed from here; `docker-compose.yml` was not run.
+- **Docker / hosting:** the image was built and run locally (base images adjusted only on the build machine to trust the sandbox's TLS proxy; the committed Dockerfile is unchanged). The Render deployment itself was not performed from here and `render.yaml` has not been validated by Render; `docker-compose.yml` was not run.
 - **Data:** all tests use synthetic data. No reconciliation against approved reports is possible until certified extracts are supplied (GAPS F7).
 - **Accessibility:** checked by design (text on every status, 44–56 px touch targets, focus rings, `aria` labels) but not by an automated audit tool.
