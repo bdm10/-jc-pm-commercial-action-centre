@@ -1,0 +1,38 @@
+# --- Governance: internal reference material and customer extracts never go to Git ---
+# Put reference packs, semantic-model guides, MiPM screenshots and any real/anonymised
+# extracts under private/ (or data/extracts/). Both are ignored. Commit them only with
+# explicit written approval.
+private/
+data/extracts/
+data/inbox/
+*.docx
+*.xlsx
+*.xls
+*.pbix
+*.pdf
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Generated synthetic data (regenerate with `make seed`)
+data/synthetic/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+*.egg-info/
+
+# Node
+node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

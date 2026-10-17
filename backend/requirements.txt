@@ -1,0 +1,12 @@
+# Runtime
+fastapi==0.143.3
+uvicorn[standard]==0.54.0
+SQLAlchemy==2.1.5
+alembic==1.20.0
+psycopg[binary]==3.3.6
+pydantic==2.14.1
+pydantic-settings==2.16.0
+PyJWT[crypto]==2.15.1
+httpx==0.28.1
+# Optional AI provider adapter (only used when AI_PROVIDER=anthropic)
+anthropic==1.15.0
