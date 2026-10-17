@@ -77,6 +77,7 @@ def me(user: AppUser = Depends(current_user), db: Session = Depends(get_db)) -> 
         "config_version": version,
         "rules_status": "provisional",
         "freshness": freshness(db, params),
+        "today": clock.today().isoformat(),
     }
 
 

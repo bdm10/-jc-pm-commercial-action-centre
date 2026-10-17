@@ -1,0 +1,2 @@
+measure_code,display_name_es,display_name_en,certified_measure_name,source_model,source_entity,business_definition,certification_status,unit,additive_over_months,approved_by,approved_at
+PM_NET_SALES,Ventas netas,Net sales,[Complete: exact measure name],PM Ventas base,PM,[Complete],synthetic,EUR,true,,
