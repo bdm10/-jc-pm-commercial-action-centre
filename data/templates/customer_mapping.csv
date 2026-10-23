@@ -1,0 +1,2 @@
+mapping_ref,from_entity,from_customer_id,to_entity,to_customer_id,transfer_date,cohort,mapping_status,approved_by,approved_at
+EXAMPLE-MAP-0001,JC,EXAMPLE-JC-0001,PM,EXAMPLE-PM-0001,2026-07-01,Nexora-W2,approved,Data owner,2026-06-20

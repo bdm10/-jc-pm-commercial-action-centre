@@ -1,0 +1,2 @@
+source_entity,source_model,source_refreshed_at,period_start,period_end,extract_grain,data_classification,filters_applied,contract_version
+PM,PM Ventas base,2026-10-16T06:00:00+02:00,2024-01-01,2026-10-15,customer-month for measures; invoice line for purchases,synthetic,default filters per approved model guide vX,1

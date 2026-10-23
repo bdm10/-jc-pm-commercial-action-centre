@@ -1,0 +1,2 @@
+source_entity,source_customer_id,measure_code,month,value,currency,record_key
+PM,EXAMPLE-PM-0001,PM_NET_SALES,2026-09,1834.50,EUR,PM|EXAMPLE-PM-0001|PM_NET_SALES|2026-09

@@ -1,0 +1,2 @@
+source_entity,record_key,source_customer_id,document_date,document_type,document_ref,brand,sku,sku_description,channel,quantity,unit,amount,amount_measure_code,currency
+PM,PM|EXAMPLE-FV-0001|1,EXAMPLE-PM-0001,2026-09-18,invoice,EXAMPLE-FV-0001,Marca Ejemplo,EXAMPLE-SKU-01,Cava Brut 75cl,Horeca,12,botella,214.80,PM_NET_SALES,EUR

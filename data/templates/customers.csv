@@ -1,0 +1,2 @@
+source_entity,source_customer_id,display_name,channel,segment,city,province,is_intercompany,seasonal_flag,transfer_cohort,source_status
+PM,EXAMPLE-PM-0001,Ejemplo S.L. (ficticio),Horeca,Restauración,Barcelona,Barcelona,false,,,Activo
