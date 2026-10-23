@@ -75,7 +75,7 @@ A login-protected online demo with **synthetic data only** and no company connec
 
 | Resource | What it is | Plan |
 |---|---|---|
-| `jc-pm-action-centre-demo` | Web service built from the root `Dockerfile`, branch `dev/commercial-action-centre-prototype`, region Frankfurt. FastAPI serves the API under `/api` and the built React app on every other path, on one URL. Health check: `/healthz`. | Free |
+| `jc-pm-action-centre-demo` | **Web service (Docker)** built from the root `Dockerfile`, branch `main`, region Frankfurt. FastAPI serves the API under `/api` and the built React app on every other path, on one URL. Health check: `/healthz`. | Free |
 | `jc-pm-action-centre-demo-db` | PostgreSQL 16, Frankfurt, no public access | Free |
 
 **Environment variables**
@@ -90,12 +90,15 @@ A login-protected online demo with **synthetic data only** and no company connec
 
 The service refuses to start if the username or password is missing or too short, so the demo is never left open.
 
+> **Use New → Blueprint, not New → Static Site.** This app needs its Python server: the login gate, the API and the database all live there. A Static Site fails with *"Empty build command; skipping build"* and *"Publish directory … does not exist!"*. Even with a build command set, it would publish the interface **without** the login gate and without a working API. There is no build command or publish directory to enter: the `Dockerfile` builds the React app (`frontend/`: `npm ci && npm run build` → `frontend/dist`) and FastAPI serves it behind the login.
+
 **Steps**
 
 1. Sign in at <https://dashboard.render.com> with **GitHub**, or choose **Sign up with GitHub** if you have no Render account.
+   - If you already created a Static Site for this repository, delete it first: open it → **Settings** → **Delete Static Site**.
 2. In the dashboard, choose **New → Blueprint**.
 3. If Render asks for GitHub access, install its app with **Only select repositories** → `bdm10/-jc-pm-commercial-action-centre`.
-4. Select that repository. For **Branch**, choose `dev/commercial-action-centre-prototype`. Give the Blueprint a name, for example `jc-pm-action-centre-demo`. Render reads `render.yaml` and lists the two resources above.
+4. Select that repository. For **Branch**, choose `main`. Give the Blueprint a name, for example `jc-pm-action-centre-demo`. Render reads `render.yaml` and lists the two resources above.
 5. Check that both resources show the **Free** plan. If Render shows a paid plan or asks for payment details, stop and don't apply.
 6. Enter values for `DEMO_ACCESS_USER` and `DEMO_ACCESS_PASSWORD` when Render asks for them.
 7. Choose **Apply** (or **Deploy Blueprint**). The first build takes about 5–10 minutes. Wait until the web service shows **Live**.
@@ -116,10 +119,34 @@ If you skipped the credentials prompt, or want to change them later: web service
 
 | Task | How |
 |---|---|
-| Update | Push to `dev/commercial-action-centre-prototype`; Render redeploys automatically |
-| After merging PR #1 | Change `branch:` in `render.yaml` to `main`, or use web service → **Settings → Build & Deploy → Branch** |
+| Update | Merge changes into `main`; Render redeploys automatically |
 | Pause | Web service → **Settings → Suspend** |
 | Remove | Delete the web service, then the database (**Settings → Delete**). Optionally remove Render's access in GitHub → Settings → Applications. |
+
+**Manual alternative** (only if you cannot use a Blueprint; same result, more clicks):
+
+1. **New → Postgres:**
+   - Name `jc-pm-action-centre-demo-db`, region **Frankfurt**, PostgreSQL **16**, instance type **Free** → **Create Database**.
+   - When it is ready, copy its **Internal Database URL**.
+2. **New → Web Service:**
+   - Select the repository, branch `main`.
+   - **Language: Docker** (Render detects the root `Dockerfile`), region **Frankfurt**, instance type **Free**.
+   - Leave any build or start command empty; the Dockerfile handles both.
+3. **Environment variables** on the same screen:
+   - `APP_ENV` = `demo`, `AUTH_MODE` = `demo`, `AI_PROVIDER` = `none`;
+   - `DEMO_ACCESS_USER` and `DEMO_ACCESS_PASSWORD` = your login (≥ 3 and ≥ 16 characters);
+   - `SESSION_SECRET` = a long random string (Render's *Generate* option, or any password-manager generated value);
+   - `DATABASE_URL` = the Internal Database URL from step 1.
+4. **Advanced → Health Check Path:** `/healthz` → **Deploy Web Service**.
+
+**Troubleshooting**
+
+| Render shows | Cause and fix |
+|---|---|
+| *Empty build command; skipping build* or *Publish directory … does not exist!* | The service was created as a **Static Site**. Delete it and create the Blueprint as above. |
+| *Refusing to start: … DEMO_ACCESS_PASSWORD … / DEMO_ACCESS_USER …* | Credentials missing or too short. Web service → **Environment** → set them → **Save changes**. |
+| Health check failing, logs mention the database | `DATABASE_URL` missing or wrong, or the free database expired (see *Free-tier behaviour*). |
+| The page says *"La API no está disponible en esta dirección"* | You are looking at a Static Site, not the web service. Use the web service's URL, or delete the Static Site. |
 
 **Automated check of a deployed demo** (needs the local setup below):
 

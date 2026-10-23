@@ -46,7 +46,14 @@ function Bootstrap() {
   const [demoUser, setDemoUserState] = useState<string | null>(getDemoUser);
 
   if (meta.isPending) return <div className="authbox"><Loading rows={1} /></div>;
-  if (meta.isError) return <div className="authbox"><ErrorState onRetry={() => meta.refetch()} /></div>;
+  if (meta.isError) {
+    const e = meta.error;
+    if (e instanceof ApiError && (e.code === "not_json" || e.status === 404)) {
+      // The interface is being served without its API, typically a Render "Static Site" instead of the Blueprint.
+      return <AuthMessage title={t("auth.noBackend.title")} body={t("auth.noBackend.body")} />;
+    }
+    return <div className="authbox"><ErrorState onRetry={() => meta.refetch()} /></div>;
+  }
   const m = meta.data;
   if (!m.auth_configured) return <AuthMessage title={t("auth.notConfigured.title")} body={t("auth.notConfigured.body")} />;
   if (m.auth_mode === "entra") return <AuthMessage title={t("auth.entra.title")} body={t("auth.entra.body")} />;

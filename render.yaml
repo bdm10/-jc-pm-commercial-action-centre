@@ -1,6 +1,14 @@
 # Render Blueprint: Commercial Action Centre demo on SYNTHETIC data, Render free tier only.
 # Deployment steps: README.md -> "Deploy the demo on Render". Details: docs/DEPLOY_DEMO.md
 #
+# Create it with  New -> Blueprint  (Render reads this file). Do NOT create a "Static Site": the app
+# needs its Python server for the login gate, the API and the database. A static site fails with
+# "Empty build command" / "Publish directory ... does not exist", and if it did build it would
+# publish the interface without the login gate and without any working API.
+#
+# There is no build command or publish directory to set: the Dockerfile builds the React app
+# (frontend/: npm ci && npm run build -> frontend/dist) and FastAPI serves it behind the login.
+#
 # One web service (Docker): FastAPI serves the API under /api and the built React app for every
 # other route, so the frontend and backend share one URL. One free PostgreSQL database.
 #
@@ -18,7 +26,7 @@ services:
     runtime: docker
     plan: free
     region: frankfurt
-    branch: dev/commercial-action-centre-prototype
+    branch: main
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /healthz

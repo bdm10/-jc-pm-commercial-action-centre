@@ -31,6 +31,8 @@ export const es = {
   "auth.entra.body": "El inicio de sesión con Microsoft Entra ID todavía no está conectado en esta versión del prototipo. Consulte la lista de integración.",
   "auth.demo.pick": "Elija un usuario de demostración",
   "auth.error": "No se ha podido verificar su acceso.",
+  "auth.noBackend.title": "La API no está disponible en esta dirección",
+  "auth.noBackend.body": "Esta dirección sirve la interfaz sin su servidor. El prototipo debe desplegarse como servicio web (Docker) desde render.yaml con New → Blueprint, no como sitio estático. Consulte el README.",
 
   "role.sales": "Comercial",
   "role.manager": "Responsable",
