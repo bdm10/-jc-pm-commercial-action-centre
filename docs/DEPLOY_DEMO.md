@@ -71,6 +71,8 @@
 
 | Symptom | Likely cause and fix |
 |---|---|
+| *Empty build command; skipping build* / *Publish directory … does not exist!* | The service was created as a **Static Site** (no server, so no login gate or API). Delete it and use **New → Blueprint** with `render.yaml`. |
+| Page says *"La API no está disponible en esta dirección"* | The interface is being served without its server (static hosting). Same fix. |
 | Deploy fails with "Refusing to start: … DEMO_ACCESS_PASSWORD … / DEMO_ACCESS_USER …" | Credentials missing or too short. Set them under **Environment** and save. |
 | First page load takes about a minute | The free service was asleep. This is expected. |
 | Health check failing, logs mention the database | The free database expired or is unavailable. See *Database expiry* above. |

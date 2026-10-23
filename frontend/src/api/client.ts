@@ -33,7 +33,13 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   if (demo) headers.set("X-Demo-User", demo);
   const res = await fetch(`/api${path}`, { ...init, headers });
   const text = await res.text();
-  const body = text ? JSON.parse(text) : null;
+  let body = null;
+  try {
+    body = text ? JSON.parse(text) : null;
+  } catch {
+    // Not our API (e.g. the app was published as a static site, so /api returns HTML or a 404 page).
+    throw new ApiError(res.status, "not_json");
+  }
   if (!res.ok) {
     const code = body?.error?.code ?? (res.status === 422 ? "validation_error" : "http_error");
     if (res.status === 401 && code === "login_required") {

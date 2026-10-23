@@ -32,6 +32,8 @@ export const en: Messages = {
   "auth.entra.body": "Microsoft Entra ID sign-in is not yet connected in this prototype version. See the integration checklist.",
   "auth.demo.pick": "Choose a demo user",
   "auth.error": "Your access could not be verified.",
+  "auth.noBackend.title": "The API is not available at this address",
+  "auth.noBackend.body": "This address serves the interface without its server. The prototype must be deployed as a web service (Docker) from render.yaml with New → Blueprint, not as a static site. See the README.",
 
   "role.sales": "Sales",
   "role.manager": "Manager",
